@@ -22,4 +22,3 @@ uvicorn app.main:app --reload
 ```
 **API Documentation goes [here](http://localhost:8000/docs)**
 
-
