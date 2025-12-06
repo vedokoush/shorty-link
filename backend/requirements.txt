@@ -1,7 +1,8 @@
 fastapi
+pydantic[email]
 uvicorn[standard]
-pydantic
 qrcode
 python-multipart
 requests
-pillow
+motor
+python-dotenv
