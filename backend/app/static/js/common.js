@@ -92,6 +92,18 @@ function setLoading(on){
 async function parseAndShowValidation(res) {
   let body = null;
   resultBox.classList.add("hidden");
+  function isInputFocused() {
+    const el = document.activeElement;
+    if (!el) return false;
+
+    return (
+      el.tagName === "INPUT" ||
+      el.tagName === "TEXTAREA" ||
+      el.tagName === "SELECT" ||
+      el.isContentEditable === true
+    );
+  }
+
   try { body = await res.json(); } catch(e) {}
 
   if (body && body.detail) {
@@ -117,6 +129,10 @@ async function parseAndShowValidation(res) {
 
         if (input) input.classList.add("is-invalid");
         if (errBox) errBox.textContent = msg;
+        
+        if (!isInputFocused()) {
+          input.focus();
+        }
       }
     });
   }
@@ -313,6 +329,7 @@ if (btnCreate) {
   btnCreate.addEventListener("click", async (ev) => {
     ev.preventDefault();
     clearErrors();
+    document.activeElement.blur();
     const originalUrl = inputUrl && inputUrl.value && inputUrl.value.trim();
     if (!originalUrl) {
       document.getElementById("input_url").classList.add("is-invalid");
