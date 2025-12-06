@@ -163,3 +163,86 @@ html, body, * {
 * {
     -ms-overflow-style: auto;
 }
+
+/* ==== TOOLTIP ==== */
+.copy-tooltip {
+  position: absolute;
+  background: black;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(0px);
+  transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.copy-tooltip.show {
+  opacity: 1;
+}
+
+.copy-tooltip[data-pos="top"] {
+  transform: translateY(4px);
+}
+.copy-tooltip[data-pos="top"].show {
+  transform: translateY(0);
+}
+
+.copy-tooltip[data-pos="bottom"] {
+  transform: translateY(-4px);
+}
+.copy-tooltip[data-pos="bottom"].show {
+  transform: translateY(0);
+}
+
+.copy-tooltip[data-pos="left"] {
+  transform: translateX(4px);
+}
+.copy-tooltip[data-pos="left"].show {
+  transform: translateX(0);
+}
+
+.copy-tooltip[data-pos="right"] {
+  transform: translateX(-4px);
+}
+.copy-tooltip[data-pos="right"].show {
+  transform: translateX(0);
+}
+
+/* ---- Arrow ---- */
+.copy-tooltip::after {
+  content: "";
+  position: absolute;
+  border: 6px solid transparent;
+}
+
+.copy-tooltip[data-pos="top"]::after {
+  border-top-color: black;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.copy-tooltip[data-pos="bottom"]::after {
+  border-bottom-color: black;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.copy-tooltip[data-pos="left"]::after {
+  border-left-color: black;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.copy-tooltip[data-pos="right"]::after {
+  border-right-color: black;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+}

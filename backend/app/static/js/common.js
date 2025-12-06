@@ -125,22 +125,94 @@ async function parseAndShowValidation(res) {
 /* ====== COPY TO CLIPBOARD ====== */
 if (btnCopy) {
   btnCopy.addEventListener("click", async () => {
+    let copyTooltip = null;
+    let copyTooltipTimer = null;
+
+    function showTooltip(target, message) {
+      if (copyTooltip) {
+        copyTooltip.remove();
+        clearTimeout(copyTooltipTimer);
+      }
+
+      const tooltip = document.createElement("div");
+      tooltip.className = "copy-tooltip";
+      tooltip.textContent = message;
+      document.body.appendChild(tooltip);
+
+      const rect = target.getBoundingClientRect();
+
+      // Định vị chuẩn với offset scroll
+      const viewportTop = rect.top + window.scrollY;
+      const viewportLeft = rect.left + window.scrollX;
+
+      const spaces = {
+        top:    rect.top,
+        bottom: window.innerHeight - rect.bottom,
+        left:   rect.left,
+        right:  window.innerWidth - rect.right
+      };
+
+      const best = Object.entries(spaces).sort((a,b)=>b[1]-a[1])[0][0];
+      tooltip.dataset.pos = best;
+
+      const tW = tooltip.offsetWidth;
+      const tH = tooltip.offsetHeight;
+
+      let top = 0, left = 0;
+
+      if (best === "top") {
+        top = viewportTop - tH - 14;
+        left = viewportLeft + (rect.width - tW) / 2;
+      }
+      else if (best === "bottom") {
+        top = viewportTop + rect.height + 14;
+        left = viewportLeft + (rect.width - tW) / 2;
+      }
+      else if (best === "left") {
+        top = viewportTop + (rect.height - tH) / 2;
+        left = viewportLeft - tW - 14;
+      }
+      else if (best === "right") {
+        top = viewportTop + (rect.height - tH) / 2;
+        left = viewportLeft + rect.width + 14;
+      }
+
+      tooltip.style.top = `${top}px`;
+      tooltip.style.left = `${left}px`;
+
+      requestAnimationFrame(() => tooltip.classList.add("show"));
+
+      copyTooltip = tooltip;
+
+      copyTooltipTimer = setTimeout(() => {
+        tooltip.classList.remove("show");
+        setTimeout(() => {
+          tooltip.remove();
+          if (copyTooltip === tooltip) copyTooltip = null;
+        }, 200);
+      }, 1200);
+    }
     const val = shortUrlInput && shortUrlInput.value;
     if (!val) return;
+
     try {
       await navigator.clipboard.writeText(val);
-      // visual feedback: temporarily change button style
+
       btnCopy.classList.add("btn-success");
+      showTooltip(btnCopy, "Copied");
+
       setTimeout(()=> btnCopy.classList.remove("btn-success"), 900);
     } catch (err) {
-      // fallback: select + execCommand
       try {
         shortUrlInput.select();
         document.execCommand('copy');
+
         btnCopy.classList.add("btn-success");
+        showTooltip(btnCopy, "Copied");
+
         setTimeout(()=> btnCopy.classList.remove("btn-success"), 900);
       } catch(e) {
-        alert("Copy thất bại. Vui lòng copy thủ công.");
+        showTooltip(btnCopy, "Copy failed");
         console.error(e);
       }
     }
@@ -301,8 +373,21 @@ function updateWrapWidths() {
     });
 }
 
+/* === Các sự kiện === */
 window.addEventListener("load", updateWrapWidths);
 window.addEventListener("resize", updateWrapWidths);
+inputUrl.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    btnCreate.click();
+  }
+});
+customCode.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    btnCreate.click();
+  }
+});
 
 
 /* ====== optionally expose functions to global for manual use/debug ====== */
