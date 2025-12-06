@@ -4,3 +4,5 @@ pydantic
 qrcode
 python-multipart
 requests
+Pillow
+jinja2
