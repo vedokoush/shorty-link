@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse, JSONResponse
 from app.schemas.link_schema import LinkRequest, LinkResponse
 from app.services.generator import generate_code
 from app.services.qr_service import generate_qr_base64
-from app.db.crud import save_link, get_link, get_all_links
+from app.db.crud import save_link, get_link, get_all_links, is_code_exist
 from datetime import datetime, timezone
 
 router = APIRouter()
@@ -13,6 +13,10 @@ BASE_DOMAIN = "http://localhost:8000/"
 @router.post("/api/shorten", response_model=LinkResponse)
 async def shorten_link(body: LinkRequest):
     code = body.customCode or generate_code()
+
+    if await is_code_exist(code):
+        raise HTTPException(status_code=400, detail="Custom code already exists")
+
     await save_link(code, body.originalUrl,body.createdAt,body.expireAt)
 
     short_url = BASE_DOMAIN + code
