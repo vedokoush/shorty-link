@@ -34,3 +34,7 @@ async def del_expired_links():
     await link_collection.delete_many({
         "expireAt": {"$lt": datetime.now()}
     })
+
+async def code_exists(code: str):
+    doc = await link_collection.find_one({"code": code})
+    return doc is not None

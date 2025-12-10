@@ -7,6 +7,7 @@ class LinkRequest(BaseModel):
     customCode: Optional[str] = None
     createdAt: datetime
     expireAt: Optional[datetime] = None
+    lifetime: bool = False
 
 class LinkResponse(BaseModel):
     shortUrl: str
